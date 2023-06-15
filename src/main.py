@@ -2,7 +2,6 @@ import vtk
 
 
 class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
-
     def __init__(self, actor, renderer, paddle1, paddle2, score1, score2):
         self.AddObserver("KeyPressEvent", self.key_press_event)
         self.actor = actor
@@ -52,8 +51,11 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
     def execute(self, obj, event):
         position = list(self.actor.GetPosition())
-        new_position = [position[0] + self.direction[0],
-                        position[1] + self.direction[1], 0]
+        new_position = [
+            position[0] + self.direction[0],
+            position[1] + self.direction[1],
+            0,
+        ]
 
         # Ball radius
         ball_radius = 0.02
@@ -66,16 +68,22 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         paddle2_pos = self.paddle2.GetPosition()[1]
 
         # Check if ball is about to hit paddle1 (left paddle)
-        if -0.9 <= new_position[
-            0] - ball_radius <= -0.89 and paddle1_pos - paddle_range <= \
-                new_position[1] <= paddle1_pos + paddle_range and \
-                self.direction[0] < 0:
+        if (
+            -0.9 <= new_position[0] - ball_radius <= -0.89
+            and paddle1_pos - paddle_range
+            <= new_position[1]
+            <= paddle1_pos + paddle_range
+            and self.direction[0] < 0
+        ):
             self.direction[0] = -self.direction[0]
         # Check if ball is about to hit paddle2 (right paddle)
-        elif 0.89 <= new_position[
-            0] + ball_radius <= 0.9 and paddle2_pos - paddle_range <= \
-                new_position[1] <= paddle2_pos + paddle_range and \
-                self.direction[0] > 0:
+        elif (
+            0.89 <= new_position[0] + ball_radius <= 0.9
+            and paddle2_pos - paddle_range
+            <= new_position[1]
+            <= paddle2_pos + paddle_range
+            and self.direction[0] > 0
+        ):
             self.direction[0] = -self.direction[0]
 
         # Check if ball is about to hit top or bottom wall
@@ -128,6 +136,7 @@ def create_text_actor(position):
 
     return text_actor
 
+
 def create_border(x1, y1, z1, x2, y2, z2):
     line_source = vtk.vtkLineSource()
     line_source.SetPoint1(x1, y1, z1)
@@ -140,6 +149,7 @@ def create_border(x1, y1, z1, x2, y2, z2):
     line_actor.SetMapper(line_mapper)
 
     return line_actor
+
 
 # Create a sphere (the ball)
 ball_source = vtk.vtkSphereSource()
@@ -162,8 +172,6 @@ paddle2.SetPosition(0.9, 0, 0)
 # Create score display
 score1 = create_text_actor((200, 560))  # Player 1 score positioned to the left
 score2 = create_text_actor((600, 560))  # Player 2 score positioned to the right
-
-
 
 
 # Create a renderer
@@ -202,7 +210,7 @@ interactor.SetInteractorStyle(style)
 
 interactor.Initialize()
 interactor.CreateRepeatingTimer(1)
-interactor.AddObserver('TimerEvent', style.execute)
+interactor.AddObserver("TimerEvent", style.execute)
 
 # Start the visualization
 interactor.Start()
