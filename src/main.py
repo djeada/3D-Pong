@@ -13,16 +13,7 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         self.timer_id = None
         self.direction = [0.01, 0.01, 0.0]
         self.score = [0, 0]
-
-    def OnKeyPress(self):
-        # This method gets called on 'KeyPressEvent'
-        # By overriding it, we can change the default behavior of the 'w' key,
-        # which normally toggles between wireframe and solid view
-        key = self.GetInteractor().GetKeySym()
-        if key != "w":
-            # Call parent's key press method only if pressed key is not 'w'
-            super().OnKeyPress()
-
+        
     def reset(self):
         self.actor.SetPosition(0, 0, 0)
         self.score1.SetInput(str(self.score[0]))
