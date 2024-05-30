@@ -5,30 +5,31 @@ from border import create_border
 from ball import create_ball
 from config import load_config
 from interactor import KeyPressInteractorStyle
+from typing import Tuple, Dict, Any
 
 
 class Game:
-    def __init__(self, config_file):
-        self.config = load_config(config_file)
-        self.renderer = vtk.vtkRenderer()
-        self.render_window = vtk.vtkRenderWindow()
-        self.interactor = vtk.vtkRenderWindowInteractor()
-        self.style = None
+    def __init__(self, config_file: str) -> None:
+        self.config: Dict[str, Any] = load_config(config_file)
+        self.renderer: vtk.vtkRenderer = vtk.vtkRenderer()
+        self.render_window: vtk.vtkRenderWindow = vtk.vtkRenderWindow()
+        self.interactor: vtk.vtkRenderWindowInteractor = vtk.vtkRenderWindowInteractor()
+        self.style: KeyPressInteractorStyle | None = None
 
-        self.ball_actor = None
-        self.paddle1 = None
-        self.paddle2 = None
-        self.score1 = None
-        self.score2 = None
+        self.ball_actor: vtk.vtkActor | None = None
+        self.paddle1: vtk.vtkActor | None = None
+        self.paddle2: vtk.vtkActor | None = None
+        self.score1: vtk.vtkTextActor | None = None
+        self.score2: vtk.vtkTextActor | None = None
 
-    def initialize(self):
+    def initialize(self) -> None:
         self.create_actors()
         self.setup_renderer()
         self.setup_render_window()
         self.setup_interactor()
         self.center_window()
 
-    def create_actors(self):
+    def create_actors(self) -> None:
         self.ball_actor = create_ball(self.config["ball"])
         self.paddle1 = create_paddle(self.config["paddle"])
         self.paddle1.SetPosition(-0.9, 0, 0)
@@ -38,30 +39,30 @@ class Game:
         self.score1 = create_text_actor((200, 560))
         self.score2 = create_text_actor((600, 560))
 
-        border1 = create_border(-1.0, -1.0, 0.0, -1.0, 1.0, 0.0)
-        border2 = create_border(-1.0, 1.0, 0.0, 1.0, 1.0, 0.0)
-        border3 = create_border(1.0, 1.0, 0.0, 1.0, -1.0, 0.0)
-        border4 = create_border(1.0, -1.0, 0.0, -1.0, -1.0, 0.0)
+        borders = [
+            create_border((-1.0, -1.0, 0.0), (-1.0, 1.0, 0.0)),
+            create_border((-1.0, 1.0, 0.0), (1.0, 1.0, 0.0)),
+            create_border((1.0, 1.0, 0.0), (1.0, -1.0, 0.0)),
+            create_border((1.0, -1.0, 0.0), (-1.0, -1.0, 0.0)),
+        ]
 
         self.renderer.AddActor(self.ball_actor)
         self.renderer.AddActor(self.paddle1)
         self.renderer.AddActor(self.paddle2)
         self.renderer.AddActor(self.score1)
         self.renderer.AddActor(self.score2)
-        self.renderer.AddActor(border1)
-        self.renderer.AddActor(border2)
-        self.renderer.AddActor(border3)
-        self.renderer.AddActor(border4)
+        for border in borders:
+            self.renderer.AddActor(border)
 
-    def setup_renderer(self):
+    def setup_renderer(self) -> None:
         self.render_window.AddRenderer(self.renderer)
 
-    def setup_render_window(self):
+    def setup_render_window(self) -> None:
         self.render_window.SetSize(
             self.config["window"]["width"], self.config["window"]["height"]
         )
 
-    def setup_interactor(self):
+    def setup_interactor(self) -> None:
         self.interactor.SetRenderWindow(self.render_window)
         self.style = KeyPressInteractorStyle(
             self.ball_actor,
@@ -77,7 +78,7 @@ class Game:
         self.interactor.CreateRepeatingTimer(1)
         self.interactor.AddObserver("TimerEvent", self.style.execute)
 
-    def center_window(self):
+    def center_window(self) -> None:
         screen_width, screen_height = self.get_screen_size()
         window_width = self.config["window"]["width"]
         window_height = self.config["window"]["height"]
@@ -86,7 +87,7 @@ class Game:
         )
 
     @staticmethod
-    def get_screen_size():
+    def get_screen_size() -> Tuple[int, int]:
         temp_window = vtk.vtkRenderWindow()
         temp_window.OffScreenRenderingOn()
         temp_window.Render()
@@ -96,5 +97,5 @@ class Game:
 
         return screen_size
 
-    def start(self):
+    def start(self) -> None:
         self.interactor.Start()

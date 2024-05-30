@@ -1,10 +1,13 @@
 import vtk
+from typing import Tuple
 
 
-def create_border(x1, y1, z1, x2, y2, z2):
+def create_border(
+    point1: Tuple[float, float, float], point2: Tuple[float, float, float]
+) -> vtk.vtkActor:
     line_source = vtk.vtkLineSource()
-    line_source.SetPoint1(x1, y1, z1)
-    line_source.SetPoint2(x2, y2, z2)
+    line_source.SetPoint1(*point1)
+    line_source.SetPoint2(*point2)
 
     line_mapper = vtk.vtkPolyDataMapper()
     line_mapper.SetInputConnection(line_source.GetOutputPort())

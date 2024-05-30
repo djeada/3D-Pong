@@ -1,7 +1,8 @@
 import vtk
+from typing import Dict, Any
 
 
-def create_paddle(config):
+def create_paddle(config: Dict[str, Any]) -> vtk.vtkActor:
     paddle_source = vtk.vtkCubeSource()
     paddle_source.SetXLength(config["x_length"])
     paddle_source.SetYLength(config["y_length"])

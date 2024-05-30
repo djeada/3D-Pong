@@ -1,13 +1,14 @@
 import yaml
 import logging
 import os
+from typing import Dict, Any
 
 # Configure logging
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-DEFAULT_CONFIG = {
+DEFAULT_CONFIG: Dict[str, Dict[str, Any]] = {
     "window": {
         "width": 800,
         "height": 600,
@@ -29,13 +30,13 @@ DEFAULT_CONFIG = {
 }
 
 
-def create_default_config(config_file):
+def create_default_config(config_file: str) -> None:
     with open(config_file, "w") as file:
         yaml.safe_dump(DEFAULT_CONFIG, file)
     logging.info(f"Default configuration file created at {config_file}")
 
 
-def load_config(config_file):
+def load_config(config_file: str) -> Dict[str, Any]:
     if not os.path.exists(config_file):
         logging.warning(
             f"Configuration file {config_file} not found. Creating default configuration."
