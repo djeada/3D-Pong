@@ -73,7 +73,7 @@ class Game:
             self.paddle2,
             self.score1,
             self.score2,
-            self.config["game"],
+            self.config,
         )
         self.interactor.SetInteractorStyle(self.style)
         self.interactor.Initialize()
