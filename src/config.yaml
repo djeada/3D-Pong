@@ -1,0 +1,17 @@
+window:
+  width: 800
+  height: 600
+
+ball:
+  radius: 0.02
+  phi_resolution: 20
+  theta_resolution: 20
+
+paddle:
+  x_length: 0.02
+  y_length: 0.4
+  z_length: 0.02
+
+game:
+  speed_increase_interval: 500  # Increase speed every 500 iterations
+  speed_multiplier: 1.1  # Increase speed by 10% each interval

@@ -23,7 +23,7 @@ To work with the source code and manage dependencies, follow these steps:
 1. **Clone the Repository**: First, clone the repository to your local machine.
 
     ```bash
-    $ git clone https://github.com/yourusername/3D-Pong.git
+    $ git clone https://github.com/djeada/3D-Pong.git
     $ cd 3D-Pong
     ```
 
