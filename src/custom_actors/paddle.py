@@ -1,5 +1,6 @@
+from typing import Any, Dict
+
 import vtk
-from typing import Dict, Any
 
 
 def create_paddle(config: Dict[str, Any]) -> vtk.vtkActor:

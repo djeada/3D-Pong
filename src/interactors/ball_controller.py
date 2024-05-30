@@ -1,6 +1,7 @@
-import vtk
 import logging
-from typing import List, Tuple, Dict, Any
+from typing import Any, Dict, List
+
+import vtk
 
 # Configure logging
 logging.basicConfig(
@@ -8,69 +9,24 @@ logging.basicConfig(
 )
 
 
-class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
+class BallController:
     def __init__(
         self,
         actor: vtk.vtkActor,
-        renderer: vtk.vtkRenderer,
         paddle1: vtk.vtkActor,
         paddle2: vtk.vtkActor,
-        score1: vtk.vtkTextActor,
-        score2: vtk.vtkTextActor,
+        score_manager: "ScoreManager",
         game_config: Dict[str, Any],
     ) -> None:
-        super().__init__()
         self.actor = actor
-        self.renderer = renderer
         self.paddle1 = paddle1
         self.paddle2 = paddle2
-        self.score1 = score1
-        self.score2 = score2
+        self.score_manager = score_manager
         self.game_config = game_config
-        self.timer_id = None
         self.direction: List[float] = [0.01, 0.01, 0.0]
-        self.score: List[int] = [0, 0]
         self.time_elapsed = 0
-        self.AddObserver("KeyPressEvent", self.key_press_event)
-        logging.info("KeyPressInteractorStyle initialized.")
 
-    def reset(self) -> None:
-        self.actor.SetPosition(0, 0, 0)
-        self.update_score_display()
-        logging.info("Game reset. Ball position and scores reset.")
-
-    def update_score_display(self) -> None:
-        self.score1.SetInput(str(self.score[0]))
-        self.score2.SetInput(str(self.score[1]))
-        logging.debug(
-            f"Scores updated. Player 1: {self.score[0]}, Player 2: {self.score[1]}"
-        )
-
-    def key_press_event(self, obj: vtk.vtkObject, event: str) -> None:
-        key = self.GetInteractor().GetKeySym()
-        logging.debug(f"Key pressed: {key}")
-        self.move_paddles(key)
-
-    def move_paddles(self, key: str) -> None:
-        position_left_paddle = list(self.paddle1.GetPosition())
-        position_right_paddle = list(self.paddle2.GetPosition())
-
-        if key == "Up":
-            position_right_paddle[1] += 0.1
-        elif key == "Down":
-            position_right_paddle[1] -= 0.1
-        elif key == "w":
-            position_left_paddle[1] += 0.1
-        elif key == "s":
-            position_left_paddle[1] -= 0.1
-
-        self.paddle1.SetPosition(position_left_paddle[0], position_left_paddle[1], 0)
-        self.paddle2.SetPosition(position_right_paddle[0], position_right_paddle[1], 0)
-        logging.debug(
-            f"Paddle positions updated. Left: {position_left_paddle}, Right: {position_right_paddle}"
-        )
-
-    def execute(self, obj: vtk.vtkObject, event: str) -> None:
+    def execute(self) -> None:
         self.time_elapsed += 1
         if self.time_elapsed % self.game_config["speed_increase_interval"] == 0:
             self.increase_ball_speed()
@@ -78,7 +34,6 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         new_position = self.calculate_new_position()
         self.check_collisions(new_position)
         self.update_ball_position(new_position)
-        self.GetInteractor().GetRenderWindow().Render()
 
     def increase_ball_speed(self) -> None:
         self.direction[0] *= self.game_config["speed_multiplier"]
@@ -143,14 +98,12 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         if new_position[0] - ball_radius < -1.0:
             new_position[0] = -1.0 + ball_radius
             self.direction[0] = -self.direction[0]
-            self.score[1] += 1
-            self.update_score_display()
+            self.score_manager.score_point(2)
             logging.info("Ball hit left wall. Player 2 scored.")
         elif new_position[0] + ball_radius > 1.0:
             new_position[0] = 1.0 - ball_radius
             self.direction[0] = -self.direction[0]
-            self.score[0] += 1
-            self.update_score_display()
+            self.score_manager.score_point(1)
             logging.info("Ball hit right wall. Player 1 scored.")
 
     def update_ball_position(self, new_position: List[float]) -> None:

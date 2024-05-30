@@ -1,11 +1,13 @@
+from typing import Any, Dict, Tuple
+
 import vtk
-from paddle import create_paddle
-from score import create_text_actor
-from border import create_border
-from ball import create_ball
-from config import load_config
-from interactor import KeyPressInteractorStyle
-from typing import Tuple, Dict, Any
+
+from src.config.config import load_config
+from src.custom_actors.ball import create_ball
+from src.custom_actors.border import create_border
+from src.custom_actors.paddle import create_paddle
+from src.custom_actors.score import create_text_actor
+from src.interactors.interactor import KeyPressInteractorStyle
 
 
 class Game:

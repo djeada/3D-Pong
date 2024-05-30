@@ -1,8 +1,8 @@
-from src.game import Game
+from src.models.game import Game
 
 
 def main():
-    game = Game("config.yaml")
+    game = Game("config/config.yaml")
     game.initialize()
     game.start()
 

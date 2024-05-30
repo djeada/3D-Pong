@@ -1,5 +1,6 @@
-import vtk
 from typing import Tuple
+
+import vtk
 
 
 def create_border(

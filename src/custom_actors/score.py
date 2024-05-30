@@ -1,5 +1,6 @@
-import vtk
 from typing import Tuple
+
+import vtk
 
 
 def create_text_actor(position: Tuple[int, int]) -> vtk.vtkTextActor:
