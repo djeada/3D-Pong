@@ -1,9 +1,21 @@
+"""Paddle actor module for creating game paddles."""
+
 from typing import Any, Dict
 
 import vtk
 
 
 def create_paddle(config: Dict[str, Any]) -> vtk.vtkActor:
+    """
+    Create a paddle actor for the game.
+
+    Args:
+        config: Paddle configuration containing x_length, y_length,
+                and z_length values.
+
+    Returns:
+        A VTK actor representing the paddle.
+    """
     paddle_source = vtk.vtkCubeSource()
     paddle_source.SetXLength(config["x_length"])
     paddle_source.SetYLength(config["y_length"])
