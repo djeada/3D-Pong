@@ -1,8 +1,15 @@
 """Main entry point for the 3D Pong game."""
 
+import logging
 import os
 
 from src.models.game import Game
+
+# Configure logging at application level
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
 
 
 def main() -> None:

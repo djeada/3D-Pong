@@ -29,6 +29,9 @@ DEFAULT_CONFIG: Dict[str, Dict[str, Any]] = {
     "game": {
         "speed_increase_interval": 500,
         "speed_multiplier": 1.1,
+        "win_score": 11,
+        "ai_enabled": False,
+        "default_difficulty": "medium",
     },
 }
 

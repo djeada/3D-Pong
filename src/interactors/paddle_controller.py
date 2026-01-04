@@ -5,10 +5,7 @@ from typing import Any, Dict
 
 import vtk
 
-# Configure logging
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class PaddleController:
@@ -68,7 +65,7 @@ class PaddleController:
 
         self.paddle1.SetPosition(position_left_paddle[0], position_left_paddle[1], 0)
         self.paddle2.SetPosition(position_right_paddle[0], position_right_paddle[1], 0)
-        logging.debug(
+        logger.debug(
             f"Paddle positions updated. Left: {position_left_paddle}, Right: {position_right_paddle}"
         )
 
@@ -93,4 +90,4 @@ class PaddleController:
         right_x = self.paddle2.GetPosition()[0]
         self.paddle1.SetPosition(left_x, 0, 0)
         self.paddle2.SetPosition(right_x, 0, 0)
-        logging.debug("Paddle positions reset to center.")
+        logger.debug("Paddle positions reset to center.")

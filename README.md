@@ -1,20 +1,46 @@
 # 3D Pong Game
 
-This project is a 3D implementation of the classic game Pong using the Visualization Toolkit (VTK). It is a two-player game where each player controls a paddle to hit the ball and prevent it from reaching their goal. The score is updated in real-time.
+This project is a 3D implementation of the classic game Pong using the Visualization Toolkit (VTK). It features both single-player mode with AI opponent and two-player local multiplayer. The score is updated in real-time with visual feedback.
 
 ![Game Screenshot](https://github.com/djeada/3D-Pong/assets/37275728/de3d4952-6504-4171-868c-b7b6d80455b6)
 
 ## Features
+
+### Gameplay
 - **3D Real-Time Rendering**: Utilizes VTK to create an immersive 3D game environment.
-- **Two-Player Functionality**: Play with a friend! Keyboard controls allow for two players to compete.
-- **Collision Detection**: Never miss a hit with the accurate collision detection between the ball, paddles, and game boundaries.
-- **Real-Time Scoring**: Keep track of the competition with the in-game real-time scoring system.
+- **Single Player Mode**: Play against an AI opponent with three difficulty levels.
+- **Two-Player Mode**: Local multiplayer with keyboard controls.
+- **Win Condition**: First player to reach 11 points wins the match.
+- **Dynamic Ball Physics**: Ball angle changes based on where it hits the paddle.
+- **Progressive Difficulty**: Ball speed increases over time for more challenging gameplay.
+
+### Visual Effects
+- **Ball Trail**: Colorful trail effect following the ball (toggle with T key).
+- **Speed-Based Colors**: Ball color changes based on its current speed.
+- **Collision Effects**: Visual feedback when ball hits paddles.
+- **Score Flash**: Background flash effect when scoring.
+- **Dark Theme**: Modern dark background for better visibility.
+
+### AI Opponent
+- **Three Difficulty Levels**:
+  - **Easy**: Slower reactions, less accurate predictions
+  - **Medium**: Balanced gameplay (default)
+  - **Hard**: Fast reactions, highly accurate
 
 ## Controls
-- **Player 1**: Use the `w` key to move the paddle up and the `s` key to move it down.
-- **Player 2**: Use the `Up` arrow key to move the paddle up and the `Down` arrow key to move it down.
-- **Pause/Resume**: Press `Space` to pause or resume the game.
-- **Reset Game**: Press `R` to reset the game (ball position, scores, and paddles).
+
+### Paddle Movement
+- **Player 1 (Left)**: `W` to move up, `S` to move down
+- **Player 2 (Right)**: `↑` Arrow to move up, `↓` Arrow to move down
+
+### Game Controls
+| Key | Action |
+|-----|--------|
+| `Space` | Pause/Resume game |
+| `R` | Reset game |
+| `A` | Toggle AI opponent on/off |
+| `D` | Cycle difficulty (Easy → Medium → Hard) |
+| `T` | Toggle ball trail effect |
 
 ## Installation
 

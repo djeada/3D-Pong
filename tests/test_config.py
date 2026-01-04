@@ -38,6 +38,9 @@ class TestConfig(unittest.TestCase):
         """Test default game configuration values."""
         self.assertEqual(DEFAULT_CONFIG["game"]["speed_increase_interval"], 500)
         self.assertEqual(DEFAULT_CONFIG["game"]["speed_multiplier"], 1.1)
+        self.assertEqual(DEFAULT_CONFIG["game"]["win_score"], 11)
+        self.assertFalse(DEFAULT_CONFIG["game"]["ai_enabled"])
+        self.assertEqual(DEFAULT_CONFIG["game"]["default_difficulty"], "medium")
 
     def test_load_config_creates_default_when_missing(self) -> None:
         """Test that load_config creates default config when file is missing."""

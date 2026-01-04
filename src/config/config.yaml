@@ -15,3 +15,6 @@ paddle:
 game:
   speed_increase_interval: 500  # Increase speed every 500 iterations
   speed_multiplier: 1.1  # Increase speed by 10% each interval
+  win_score: 11  # Score needed to win the game
+  ai_enabled: false  # Start in two-player mode
+  default_difficulty: medium  # easy, medium, or hard

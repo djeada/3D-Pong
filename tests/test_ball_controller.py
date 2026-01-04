@@ -1,5 +1,6 @@
 """Unit tests for BallController."""
 
+import math
 import unittest
 from unittest.mock import MagicMock
 
@@ -35,18 +36,23 @@ class TestBallController(unittest.TestCase):
         )
 
     def test_initial_direction(self) -> None:
-        """Test that initial direction is set correctly."""
-        self.assertEqual(self.controller.direction, [0.01, 0.01, 0.0])
+        """Test that initial direction magnitude is set correctly."""
+        # Initial direction has x=0.01, y=0.01, so speed is sqrt(0.0001+0.0001) ≈ 0.0141
+        speed = math.sqrt(self.controller.direction[0] ** 2 + self.controller.direction[1] ** 2)
+        self.assertAlmostEqual(speed, 0.0141, places=3)
 
     def test_reset_ball(self) -> None:
         """Test resetting ball to initial state."""
         self.controller.direction = [0.05, 0.05, 0.0]
         self.controller.time_elapsed = 100
+        self.controller.rally_count = 5
         self.controller.reset()
 
         self.actor.SetPosition.assert_called_with(0, 0, 0)
-        self.assertEqual(self.controller.direction, [0.01, 0.01, 0.0])
         self.assertEqual(self.controller.time_elapsed, 0)
+        self.assertEqual(self.controller.rally_count, 0)
+        # Direction is now randomized, so check magnitude instead
+        self.assertAlmostEqual(abs(self.controller.direction[0]), 0.01, places=3)
 
     def test_ball_radius_from_config(self) -> None:
         """Test that ball radius is taken from config."""
