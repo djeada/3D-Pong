@@ -13,6 +13,8 @@ This project is a 3D implementation of the classic game Pong using the Visualiza
 ## Controls
 - **Player 1**: Use the `w` key to move the paddle up and the `s` key to move it down.
 - **Player 2**: Use the `Up` arrow key to move the paddle up and the `Down` arrow key to move it down.
+- **Pause/Resume**: Press `Space` to pause or resume the game.
+- **Reset Game**: Press `R` to reset the game (ball position, scores, and paddles).
 
 ## Installation
 

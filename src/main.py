@@ -1,8 +1,19 @@
+"""Main entry point for the 3D Pong game."""
+
+import os
+import sys
+
 from src.models.game import Game
 
 
-def main():
-    game = Game("config/config.yaml")
+def main() -> None:
+    """Initialize and start the 3D Pong game."""
+    # Determine the correct path to the config file
+    # This works both when running from the project root and from src directory
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(script_dir, "config", "config.yaml")
+    
+    game = Game(config_path)
     game.initialize()
     game.start()
 
