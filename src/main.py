@@ -1,7 +1,6 @@
 """Main entry point for the 3D Pong game."""
 
 import os
-import sys
 
 from src.models.game import Game
 
