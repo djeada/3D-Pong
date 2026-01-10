@@ -89,10 +89,11 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             paddle2, actor, self.current_difficulty, game_config.get("paddle")
         )
 
-        # Visual effects
+        # Visual effects - Futuristic theme
         self.visual_effects = VisualEffects(renderer)
         self.visual_effects.set_dark_theme()
         self.visual_effects.reset_colors(actor, paddle1, paddle2)
+        self.visual_effects.create_arena_grid()
 
         # Status text actor
         self.status_actor = self._create_status_actor()
@@ -108,31 +109,35 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         logger.info("KeyPressInteractorStyle initialized with new features.")
 
     def _create_status_actor(self) -> vtk.vtkTextActor:
-        """Create status text actor for displaying game info."""
+        """Create futuristic neon status text actor for displaying game info."""
         actor = vtk.vtkTextActor()
         actor.SetPosition(10, 10)
         prop = actor.GetTextProperty()
         prop.SetFontSize(14)
-        prop.SetColor(0.7, 0.7, 0.7)
+        prop.SetColor(0.0, 0.8, 1.0)  # Neon cyan
+        prop.SetOpacity(0.8)
+        prop.BoldOn()
         self._update_status_text()
         return actor
 
     def _create_game_over_actor(self) -> vtk.vtkTextActor:
-        """Create game over text actor."""
+        """Create futuristic neon game over text actor."""
         actor = vtk.vtkTextActor()
         actor.SetPosition(300, 300)
         prop = actor.GetTextProperty()
-        prop.SetFontSize(36)
+        prop.SetFontSize(42)
         prop.BoldOn()
-        prop.SetColor(1.0, 1.0, 0.0)
+        prop.SetColor(1.0, 0.0, 0.5)  # Neon pink
         prop.SetJustificationToCentered()
+        prop.SetShadow(1)
+        prop.SetShadowOffset(2, -2)
         return actor
 
     def _update_status_text(self) -> None:
         """Update the status text with current game mode."""
         mode = "AI" if self.ai_enabled else "2P"
         difficulty = self.current_difficulty.upper() if self.ai_enabled else ""
-        status = f"Mode: {mode} {difficulty} | [A]I toggle [D]ifficulty [R]eset [Space]Pause [T]rail"
+        status = f"◆ MODE: {mode} {difficulty} | [A]I [D]ifficulty [R]eset [SPACE]Pause [T]rail ◆"
         if hasattr(self, 'status_actor'):
             self.status_actor.SetInput(status)
 
@@ -220,7 +225,7 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
 
     def execute(self, obj: vtk.vtkObject, event: str) -> None:
         """
-        Execute the game loop update.
+        Execute the game loop update with futuristic visual effects.
 
         Args:
             obj: The VTK object that triggered the event.
@@ -236,8 +241,16 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             # Update trail effect
             if self.visual_effects.trail_enabled:
                 self.visual_effects.update_ball_trail(self.ball_actor)
+            
+            # Update pulsing glow effects
+            self.visual_effects.update_pulsing_effects(
+                self.ball_actor,
+                self.paddle_controller.paddle1,
+                self.paddle_controller.paddle2
+            )
 
-        # Update visual effects
+        # Update visual effects (particles, flash, background animation)
         self.visual_effects.update_flash()
+        self.visual_effects.update_particles()
 
         self.GetInteractor().GetRenderWindow().Render()
