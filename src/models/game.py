@@ -48,15 +48,16 @@ class Game:
         self.center_window()
 
     def create_actors(self) -> None:
-        """Create all game actors (ball, paddles, scores, borders)."""
+        """Create all game actors (ball, paddles, scores, borders) with futuristic styling."""
         self.ball_actor = create_ball(self.config["ball"])
         self.paddle1 = create_paddle(self.config["paddle"])
         self.paddle1.SetPosition(-0.9, 0, 0)
         self.paddle2 = create_paddle(self.config["paddle"])
         self.paddle2.SetPosition(0.9, 0, 0)
 
-        self.score1 = create_text_actor((200, 560))
-        self.score2 = create_text_actor((600, 560))
+        # Scores with neon styling for each player
+        self.score1 = create_text_actor((200, 540), player=1)
+        self.score2 = create_text_actor((600, 540), player=2)
 
         borders = [
             create_border((-1.0, -1.0, 0.0), (-1.0, 1.0, 0.0)),
