@@ -40,6 +40,7 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         score1: vtk.vtkTextActor,
         score2: vtk.vtkTextActor,
         game_config: Dict[str, Any],
+        render_window: vtk.vtkRenderWindow = None,
     ) -> None:
         """
         Initialize the interactor style.
@@ -52,9 +53,11 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             score1: The score text actor for player 1.
             score2: The score text actor for player 2.
             game_config: The game configuration dictionary.
+            render_window: The VTK render window for responsive sizing.
         """
         super().__init__()
         self.renderer = renderer
+        self.render_window = render_window
         self.game_config = game_config
         # Game starts paused to show main menu; unpauses after mode selection
         self.paused = True
@@ -118,9 +121,19 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         self.AddObserver("KeyPressEvent", self.key_press_event)
         logger.info("KeyPressInteractorStyle initialized with new features.")
 
+    def _get_window_size(self) -> tuple:
+        """Get current window size from render window or config."""
+        if self.render_window:
+            return self.render_window.GetSize()
+        return (
+            self.game_config.get("window", {}).get("width", 800),
+            self.game_config.get("window", {}).get("height", 600),
+        )
+
     def _create_status_actor(self) -> vtk.vtkTextActor:
         """Create futuristic neon status text actor for displaying game info."""
         actor = vtk.vtkTextActor()
+        # Position at bottom left with small margin
         actor.SetPosition(10, 10)
         prop = actor.GetTextProperty()
         prop.SetFontSize(14)
@@ -133,12 +146,15 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def _create_game_over_actor(self) -> vtk.vtkTextActor:
         """Create futuristic neon game over text actor."""
         actor = vtk.vtkTextActor()
-        actor.SetPosition(300, 300)
+        # Position at center of window
+        window_width, window_height = self._get_window_size()
+        actor.SetPosition(int(window_width * 0.5), int(window_height * 0.5))
         prop = actor.GetTextProperty()
         prop.SetFontSize(42)
         prop.BoldOn()
         prop.SetColor(1.0, 0.0, 0.5)  # Neon pink
         prop.SetJustificationToCentered()
+        prop.SetVerticalJustificationToCentered()
         prop.SetShadow(1)
         prop.SetShadowOffset(2, -2)
         return actor
@@ -150,6 +166,23 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         status = f"◆ MODE: {mode} {difficulty} | [A]I [D]ifficulty [R]eset [SPACE]Pause [T]rail ◆"
         if hasattr(self, 'status_actor'):
             self.status_actor.SetInput(status)
+
+    def update_label_positions(self) -> None:
+        """Update all label positions based on current window size."""
+        window_width, window_height = self._get_window_size()
+        
+        # Update score positions
+        score1_x = int(window_width * 0.25)
+        score2_x = int(window_width * 0.75)
+        score_y = int(window_height * 0.9)
+        self.score_manager.score1.SetPosition(score1_x, score_y)
+        self.score_manager.score2.SetPosition(score2_x, score_y)
+        
+        # Update game over actor position (centered)
+        self.game_over_actor.SetPosition(int(window_width * 0.5), int(window_height * 0.5))
+        
+        # Update menu positions
+        self.main_menu.update_positions(window_width, window_height)
 
     def _on_paddle_hit(self, paddle: vtk.vtkActor) -> None:
         """Callback when ball hits a paddle."""
