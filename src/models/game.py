@@ -41,11 +41,11 @@ class Game:
 
     def initialize(self) -> None:
         """Initialize all game components and set up the window."""
-        self.create_actors()
         self.setup_renderer()
         self.setup_render_window()
+        self.create_actors()
         self.setup_interactor()
-        self.center_window()
+        self.setup_resize_callback()
 
     def create_actors(self) -> None:
         """Create all game actors (ball, paddles, scores, borders) with futuristic styling."""
@@ -55,9 +55,17 @@ class Game:
         self.paddle2 = create_paddle(self.config["paddle"])
         self.paddle2.SetPosition(0.9, 0, 0)
 
-        # Scores with neon styling for each player
-        self.score1 = create_text_actor((200, 540), player=1)
-        self.score2 = create_text_actor((600, 540), player=2)
+        # Get current window size for responsive positioning
+        window_size = self.render_window.GetSize()
+        window_width = window_size[0]
+        window_height = window_size[1]
+
+        # Scores with neon styling for each player - positioned relative to window size
+        score1_x = int(window_width * 0.25)
+        score2_x = int(window_width * 0.75)
+        score_y = int(window_height * 0.9)
+        self.score1 = create_text_actor((score1_x, score_y), player=1)
+        self.score2 = create_text_actor((score2_x, score_y), player=2)
 
         borders = [
             create_border((-1.0, -1.0, 0.0), (-1.0, 1.0, 0.0)),
@@ -79,14 +87,20 @@ class Game:
         self.render_window.AddRenderer(self.renderer)
 
     def setup_render_window(self) -> None:
-        """Configure the render window size."""
-        self.render_window.SetSize(
-            self.config["window"]["width"], self.config["window"]["height"]
-        )
+        """Configure the render window to full screen."""
+        self.render_window.SetFullScreen(True)
+        # Render once to ensure window size is available
+        self.render_window.Render()
 
     def setup_interactor(self) -> None:
         """Set up the interactor with the custom keyboard handler."""
         self.interactor.SetRenderWindow(self.render_window)
+        
+        # Update config with actual window size for responsive positioning
+        window_size = self.render_window.GetSize()
+        self.config["window"]["width"] = window_size[0]
+        self.config["window"]["height"] = window_size[1]
+        
         self.style = KeyPressInteractorStyle(
             self.ball_actor,
             self.renderer,
@@ -95,20 +109,28 @@ class Game:
             self.score1,
             self.score2,
             self.config,
+            self.render_window,
         )
         self.interactor.SetInteractorStyle(self.style)
         self.interactor.Initialize()
         self.interactor.CreateRepeatingTimer(1)
         self.interactor.AddObserver("TimerEvent", self.style.execute)
 
-    def center_window(self) -> None:
-        """Center the game window on the screen."""
-        screen_width, screen_height = self.get_screen_size()
-        window_width = self.config["window"]["width"]
-        window_height = self.config["window"]["height"]
-        self.render_window.SetPosition(
-            (screen_width - window_width) // 2, (screen_height - window_height) // 2
-        )
+    def setup_resize_callback(self) -> None:
+        """Set up callback to handle window resize events."""
+        # Store last known size to detect actual resize events
+        self._last_window_size = self.render_window.GetSize()
+        
+        def on_window_modified(obj: vtk.vtkObject, event: str) -> None:
+            """Handle window resize event to update label positions."""
+            if self.style:
+                current_size = self.render_window.GetSize()
+                # Only update if window size actually changed
+                if current_size != self._last_window_size:
+                    self._last_window_size = current_size
+                    self.style.update_label_positions()
+        
+        self.render_window.AddObserver("ModifiedEvent", on_window_modified)
 
     @staticmethod
     def get_screen_size() -> Tuple[int, int]:

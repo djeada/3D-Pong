@@ -43,7 +43,8 @@ class MainMenu:
         # Title
         self.title_actor = vtk.vtkTextActor()
         self.title_actor.SetInput("3D PONG")
-        self.title_actor.SetPosition(self.window_width // 2 - 100, self.window_height - 150)
+        # Position title centered at top - use relative positioning
+        self._position_title()
         title_prop = self.title_actor.GetTextProperty()
         title_prop.SetFontSize(64)
         title_prop.BoldOn()
@@ -53,11 +54,9 @@ class MainMenu:
         self.renderer.AddActor(self.title_actor)
 
         # Menu options
-        base_y = self.window_height // 2 + 50
         for i, option in enumerate(self.menu_options):
             actor = vtk.vtkTextActor()
             actor.SetInput(option)
-            actor.SetPosition(self.window_width // 2 - 120, base_y - i * 60)
             prop = actor.GetTextProperty()
             prop.SetFontSize(32)
             prop.BoldOn()
@@ -65,11 +64,13 @@ class MainMenu:
             prop.SetShadowOffset(2, -2)
             self.option_actors.append(actor)
             self.renderer.AddActor(actor)
+        
+        self._position_options()
 
         # Instructions
         self.instruction_actor = vtk.vtkTextActor()
         self.instruction_actor.SetInput("Use UP/DOWN arrows to select, ENTER to start")
-        self.instruction_actor.SetPosition(self.window_width // 2 - 200, 80)
+        self._position_instructions()
         instr_prop = self.instruction_actor.GetTextProperty()
         instr_prop.SetFontSize(18)
         instr_prop.SetColor(0.6, 0.6, 0.6)
@@ -77,6 +78,51 @@ class MainMenu:
         self.renderer.AddActor(self.instruction_actor)
 
         self._update_selection_colors()
+
+    def _position_title(self) -> None:
+        """Position title actor relative to window size."""
+        # Centered horizontally, near top (85% of height)
+        # Use percentage-based offset for responsiveness
+        title_x = int(self.window_width * 0.5) - int(self.window_width * 0.05)
+        title_y = int(self.window_height * 0.85)
+        self.title_actor.SetPosition(title_x, title_y)
+
+    def _position_options(self) -> None:
+        """Position option actors relative to window size."""
+        # Center vertically and horizontally with percentage-based offsets
+        base_y = int(self.window_height * 0.55)
+        center_x = int(self.window_width * 0.5) - int(self.window_width * 0.08)
+        spacing = int(self.window_height * 0.1)
+        for i, actor in enumerate(self.option_actors):
+            actor.SetPosition(center_x, base_y - i * spacing)
+
+    def _position_instructions(self) -> None:
+        """Position instruction actor relative to window size."""
+        # Centered horizontally, near bottom (15% of height)
+        # Use percentage-based offset for responsiveness
+        instr_x = int(self.window_width * 0.5) - int(self.window_width * 0.15)
+        instr_y = int(self.window_height * 0.15)
+        self.instruction_actor.SetPosition(instr_x, instr_y)
+
+    def update_positions(self, window_width: int, window_height: int) -> None:
+        """
+        Update all menu element positions based on new window size.
+
+        Args:
+            window_width: New window width.
+            window_height: New window height.
+        """
+        self.window_width = window_width
+        self.window_height = window_height
+        
+        if self.title_actor:
+            self._position_title()
+        
+        if self.option_actors:
+            self._position_options()
+        
+        if self.instruction_actor:
+            self._position_instructions()
 
     def _update_selection_colors(self) -> None:
         """Update option colors based on current selection."""
