@@ -56,7 +56,8 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         super().__init__()
         self.renderer = renderer
         self.game_config = game_config
-        self.paused = True  # Start paused until menu selection
+        # Game starts paused to show main menu; unpauses after mode selection
+        self.paused = True
         self.ball_actor = actor
 
         # Game mode
