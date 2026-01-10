@@ -152,6 +152,16 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Nuitka build artifacts
+*.build/
+*.dist/
+*.onefile-build/
+main.bin
+main.exe
+3D-Pong
+3D-Pong.exe
+vtk_libs/
+
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
 #  be found at https://github.com/github/gitignore/blob/main/Global/JetBrains.gitignore

@@ -1,0 +1,111 @@
+name: Build and Release
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            platform: linux
+            executable: 3D-Pong
+            asset_name: 3D-Pong-linux
+          - os: windows-latest
+            platform: windows
+            executable: 3D-Pong.exe
+            asset_name: 3D-Pong-windows.exe
+          - os: macos-latest
+            platform: macos
+            executable: 3D-Pong
+            asset_name: 3D-Pong-macos
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install nuitka
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y patchelf ccache
+
+      - name: Build executable with Nuitka
+        run: |
+          python -m nuitka --standalone --onefile --plugin-enable=numpy --include-package=vtkmodules --include-module=vtk --include-module=vtkmodules.all --follow-imports --output-filename=${{ matrix.executable }} src/main.py
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ${{ matrix.executable }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4.1.8
+        with:
+          path: artifacts
+
+      - name: Generate release tag
+        id: tag
+        run: |
+          TAG="v$(date +'%Y.%m.%d')-${{ github.run_number }}"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          echo "Generated tag: $TAG"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Release ${{ steps.tag.outputs.tag }}
+          body: |
+            Automated release from commit ${{ github.sha }}
+            
+            ## Downloads
+            - **Linux**: 3D-Pong-linux
+            - **Windows**: 3D-Pong-windows.exe
+            - **macOS**: 3D-Pong-macos
+            
+            ## Installation
+            Download the appropriate executable for your operating system and run it.
+            
+            For Linux/macOS, you may need to make the file executable:
+            ```bash
+            chmod +x 3D-Pong-linux  # or 3D-Pong-macos
+            ./3D-Pong-linux
+            ```
+          files: |
+            artifacts/3D-Pong-linux/3D-Pong
+            artifacts/3D-Pong-windows.exe/3D-Pong.exe
+            artifacts/3D-Pong-macos/3D-Pong
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
