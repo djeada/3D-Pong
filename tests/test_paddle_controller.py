@@ -69,6 +69,16 @@ class TestPaddleController(unittest.TestCase):
         self.assertEqual(call_args1[1], 0)
         self.assertEqual(call_args2[1], 0)
 
+    def test_unknown_key_does_not_crash(self) -> None:
+        """Test that unknown keys don't crash the game."""
+        # These should not raise any exceptions
+        self.controller.move_paddles("x")
+        self.controller.move_paddles("Space")
+        self.controller.move_paddles("Shift_L")
+        self.controller.move_paddles("Control_L")
+        self.controller.move_paddles("1")
+        self.controller.move_paddles("F1")
+
 
 if __name__ == "__main__":
     unittest.main()

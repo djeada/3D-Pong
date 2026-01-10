@@ -10,6 +10,7 @@ from src.interactors.ball_controller import BallController
 from src.interactors.paddle_controller import PaddleController
 from src.interactors.score_manager import ScoreManager
 from src.interactors.visual_effects import VisualEffects
+from src.models.menu import MainMenu
 
 logger = logging.getLogger(__name__)
 
@@ -55,7 +56,7 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         super().__init__()
         self.renderer = renderer
         self.game_config = game_config
-        self.paused = False
+        self.paused = True  # Start paused until menu selection
         self.ball_actor = actor
 
         # Game mode
@@ -95,14 +96,22 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         self.visual_effects.reset_colors(actor, paddle1, paddle2)
         self.visual_effects.create_arena_grid()
 
+        # Main menu
+        self.main_menu = MainMenu(renderer, game_config.get("window", {}))
+        self.main_menu.on_selection = self._on_menu_selection
+
         # Status text actor
         self.status_actor = self._create_status_actor()
         renderer.AddActor(self.status_actor)
+        self.status_actor.SetVisibility(False)  # Hide until game starts
 
         # Game over text actor
         self.game_over_actor = self._create_game_over_actor()
         renderer.AddActor(self.game_over_actor)
         self.game_over_actor.SetVisibility(False)
+
+        # Hide game elements until menu selection
+        self._hide_game_elements()
 
         self.timer_id = None
         self.AddObserver("KeyPressEvent", self.key_press_event)
@@ -160,6 +169,36 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         self.game_over_actor.SetVisibility(True)
         logger.info(f"Game over! {player_name} wins!")
 
+    def _on_menu_selection(self, option: int) -> None:
+        """Handle menu selection callback."""
+        if option == MainMenu.MENU_SINGLE_PLAYER:
+            self.ai_enabled = True
+            logger.info("Single player mode selected (vs AI)")
+        else:
+            self.ai_enabled = False
+            logger.info("Two player mode selected")
+        
+        self._show_game_elements()
+        self._update_status_text()
+        self.paused = False
+
+    def _hide_game_elements(self) -> None:
+        """Hide game elements while menu is visible."""
+        self.ball_actor.SetVisibility(False)
+        self.paddle_controller.paddle1.SetVisibility(False)
+        self.paddle_controller.paddle2.SetVisibility(False)
+        self.score_manager.score1.SetVisibility(False)
+        self.score_manager.score2.SetVisibility(False)
+
+    def _show_game_elements(self) -> None:
+        """Show game elements when game starts."""
+        self.ball_actor.SetVisibility(True)
+        self.paddle_controller.paddle1.SetVisibility(True)
+        self.paddle_controller.paddle2.SetVisibility(True)
+        self.score_manager.score1.SetVisibility(True)
+        self.score_manager.score2.SetVisibility(True)
+        self.status_actor.SetVisibility(True)
+
     def reset(self) -> None:
         """Reset the game to its initial state."""
         self.ball_controller.reset()
@@ -208,7 +247,17 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             event: The event type string.
         """
         key = self.GetInteractor().GetKeySym()
+        
+        # Guard against None or empty key values
+        if not key:
+            return
+        
         logger.debug(f"Key pressed: {key}")
+
+        # Handle menu input first if menu is visible
+        if self.main_menu.is_visible():
+            self.main_menu.handle_key(key)
+            return
 
         if key == "space":
             self.toggle_pause()
