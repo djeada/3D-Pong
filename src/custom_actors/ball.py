@@ -4,6 +4,11 @@ from typing import Any, Dict
 
 import vtk
 
+# Ball configuration constants
+BALL_SIZE_MULTIPLIER = 1.5  # Scale factor for visibility
+MIN_RESOLUTION = 20
+MAX_RESOLUTION = 50  # Cap for performance
+
 
 def create_ball(config: Dict[str, Any]) -> vtk.vtkActor:
     """
@@ -17,12 +22,16 @@ def create_ball(config: Dict[str, Any]) -> vtk.vtkActor:
         A VTK actor representing the neon-style ball.
     """
     # Slightly larger ball for better visibility
-    radius = config.get("radius", 0.02) * 1.5
+    radius = config.get("radius", 0.02) * BALL_SIZE_MULTIPLIER
+    
+    # Smoother ball with capped resolution for performance
+    phi_res = min(config.get("phi_resolution", MIN_RESOLUTION) + 10, MAX_RESOLUTION)
+    theta_res = min(config.get("theta_resolution", MIN_RESOLUTION) + 10, MAX_RESOLUTION)
     
     ball_source = vtk.vtkSphereSource()
     ball_source.SetRadius(radius)
-    ball_source.SetPhiResolution(config.get("phi_resolution", 20) + 10)  # Smoother
-    ball_source.SetThetaResolution(config.get("theta_resolution", 20) + 10)
+    ball_source.SetPhiResolution(phi_res)
+    ball_source.SetThetaResolution(theta_res)
 
     ball_mapper = vtk.vtkPolyDataMapper()
     ball_mapper.SetInputConnection(ball_source.GetOutputPort())

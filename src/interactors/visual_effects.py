@@ -36,6 +36,25 @@ class VisualEffects:
     COLOR_YELLOW = COLOR_NEON_YELLOW
     COLOR_ORANGE = COLOR_NEON_ORANGE
     COLOR_CYAN = COLOR_NEON_CYAN
+    
+    # Effect configuration constants
+    MAX_TRAIL_LENGTH = 25
+    MAX_PARTICLES = 50
+    CELEBRATION_PARTICLE_COUNT = 20
+    IMPACT_PARTICLE_COUNT = 12
+    CELEBRATION_SPAWN_RANGE = 0.5  # Y-axis range for particle spawn
+    
+    # Pulse effect constants
+    PULSE_BASE = 0.3
+    PULSE_AMPLITUDE = 0.1
+    BALL_PULSE_BASE = 0.4
+    BALL_PULSE_AMPLITUDE = 0.2
+    PULSE_SPEED = 0.1
+    
+    # Grid configuration
+    GRID_POSITIONS = [-0.8, -0.4, 0, 0.4, 0.8]
+    GRID_OPACITY = 0.15
+    CENTER_LINE_OPACITY = 0.4
 
     def __init__(self, renderer: vtk.vtkRenderer) -> None:
         """
@@ -48,7 +67,7 @@ class VisualEffects:
         self.flash_duration = 0
         self.flash_actor: vtk.vtkActor | None = None
         self.trail_actors: List[vtk.vtkActor] = []
-        self.max_trail_length = 25  # Longer trail for futuristic effect
+        self.max_trail_length = self.MAX_TRAIL_LENGTH
         self.trail_enabled = True
 
         # Store original colors
@@ -57,7 +76,7 @@ class VisualEffects:
         # Particle system for collision effects
         self.particle_actors: List[vtk.vtkActor] = []
         self.particle_velocities: List[List[float]] = []
-        self.max_particles = 50
+        self.max_particles = self.MAX_PARTICLES
         
         # Glow actors for neon effect
         self.glow_actors: List[vtk.vtkActor] = []
@@ -98,7 +117,7 @@ class VisualEffects:
         # Determine spawn position based on which side scored
         spawn_x = -0.9 if player == 2 else 0.9
         
-        for _ in range(20):
+        for _ in range(self.CELEBRATION_PARTICLE_COUNT):
             sphere = vtk.vtkSphereSource()
             sphere.SetRadius(0.01)
             sphere.SetPhiResolution(6)
@@ -109,7 +128,8 @@ class VisualEffects:
             
             particle = vtk.vtkActor()
             particle.SetMapper(mapper)
-            particle.SetPosition(spawn_x, random.uniform(-0.5, 0.5), 0)
+            spawn_range = self.CELEBRATION_SPAWN_RANGE
+            particle.SetPosition(spawn_x, random.uniform(-spawn_range, spawn_range), 0)
             
             # Random neon color for each particle
             colors = [self.COLOR_NEON_PINK, self.COLOR_NEON_BLUE, 
@@ -224,7 +244,7 @@ class VisualEffects:
 
     def _spawn_impact_particles(self, position: tuple) -> None:
         """Spawn particle burst at impact location."""
-        for _ in range(12):
+        for _ in range(self.IMPACT_PARTICLE_COUNT):
             sphere = vtk.vtkSphereSource()
             sphere.SetRadius(0.008)
             sphere.SetPhiResolution(4)
@@ -465,7 +485,7 @@ class VisualEffects:
     def create_arena_grid(self) -> None:
         """Create futuristic grid lines for the arena floor."""
         # Horizontal grid lines
-        for y in [-0.8, -0.4, 0, 0.4, 0.8]:
+        for y in self.GRID_POSITIONS:
             line = vtk.vtkLineSource()
             line.SetPoint1(-1.0, y, -0.01)
             line.SetPoint2(1.0, y, -0.01)
@@ -476,14 +496,14 @@ class VisualEffects:
             actor = vtk.vtkActor()
             actor.SetMapper(mapper)
             actor.GetProperty().SetColor(*self.COLOR_NEON_PURPLE)
-            actor.GetProperty().SetOpacity(0.15)
+            actor.GetProperty().SetOpacity(self.GRID_OPACITY)
             actor.GetProperty().SetLineWidth(1)
             
             self.grid_actors.append(actor)
             self.renderer.AddActor(actor)
         
         # Vertical grid lines
-        for x in [-0.8, -0.4, 0, 0.4, 0.8]:
+        for x in self.GRID_POSITIONS:
             line = vtk.vtkLineSource()
             line.SetPoint1(x, -1.0, -0.01)
             line.SetPoint2(x, 1.0, -0.01)
@@ -494,7 +514,7 @@ class VisualEffects:
             actor = vtk.vtkActor()
             actor.SetMapper(mapper)
             actor.GetProperty().SetColor(*self.COLOR_NEON_PURPLE)
-            actor.GetProperty().SetOpacity(0.15)
+            actor.GetProperty().SetOpacity(self.GRID_OPACITY)
             actor.GetProperty().SetLineWidth(1)
             
             self.grid_actors.append(actor)
@@ -511,7 +531,7 @@ class VisualEffects:
         center_actor = vtk.vtkActor()
         center_actor.SetMapper(mapper)
         center_actor.GetProperty().SetColor(*self.COLOR_NEON_CYAN)
-        center_actor.GetProperty().SetOpacity(0.4)
+        center_actor.GetProperty().SetOpacity(self.CENTER_LINE_OPACITY)
         center_actor.GetProperty().SetLineWidth(2)
         
         self.grid_actors.append(center_actor)
@@ -521,13 +541,13 @@ class VisualEffects:
 
     def update_pulsing_effects(self, ball: vtk.vtkActor, paddle1: vtk.vtkActor, paddle2: vtk.vtkActor) -> None:
         """Apply subtle pulsing glow effect to game elements."""
-        self.pulse_phase += 0.1
-        pulse = 0.3 + 0.1 * math.sin(self.pulse_phase)
+        self.pulse_phase += self.PULSE_SPEED
+        pulse = self.PULSE_BASE + self.PULSE_AMPLITUDE * math.sin(self.pulse_phase)
         
         # Apply pulsing ambient to paddles
         paddle1.GetProperty().SetAmbient(pulse)
         paddle2.GetProperty().SetAmbient(pulse)
         
         # Ball has faster pulse
-        ball_pulse = 0.4 + 0.2 * math.sin(self.pulse_phase * 2)
+        ball_pulse = self.BALL_PULSE_BASE + self.BALL_PULSE_AMPLITUDE * math.sin(self.pulse_phase * 2)
         ball.GetProperty().SetAmbient(ball_pulse)
