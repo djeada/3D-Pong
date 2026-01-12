@@ -2,7 +2,7 @@
 
 This project is a 3D implementation of the classic game Pong using the Visualization Toolkit (VTK). It features both single-player mode with AI opponent and two-player local multiplayer. The score is updated in real-time with visual feedback.
 
-![Game Screenshot](https://github.com/djeada/3D-Pong/assets/37275728/de3d4952-6504-4171-868c-b7b6d80455b6)
+![Game Screenshot](https://github.com/user-attachments/assets/ed8aab6b-e0cd-4ad2-b9fe-bbe0ef640ca6)
 
 ## Features
 
