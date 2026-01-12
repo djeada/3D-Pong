@@ -308,6 +308,8 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         elif key == "t" or key == "T":
             self.visual_effects.toggle_trail()
         elif not self.paused and not self.score_manager.game_over:
+            if self.ai_enabled and key in ("Up", "Down"):
+                return
             self.paddle_controller.move_paddles(key)
 
     def execute(self, obj: vtk.vtkObject, event: str) -> None:

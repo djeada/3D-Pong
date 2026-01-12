@@ -43,6 +43,7 @@ class Game:
         """Initialize all game components and set up the window."""
         self.setup_renderer()
         self.setup_render_window()
+        self.setup_camera()
         self.create_actors()
         self.setup_interactor()
         self.setup_resize_callback()
@@ -92,6 +93,33 @@ class Game:
         # Render once to ensure window size is available
         self.render_window.Render()
 
+    def setup_camera(self) -> None:
+        """Configure a stable camera that keeps the arena in view."""
+        camera = self.renderer.GetActiveCamera()
+        camera.SetFocalPoint(0, 0, 0)
+        camera.SetPosition(0, 0, 3)
+        camera.SetViewUp(0, 1, 0)
+        camera.ParallelProjectionOn()
+        self.update_camera_scale()
+
+    def update_camera_scale(self) -> None:
+        """Update camera scale to keep the board within the viewport."""
+        window_width, window_height = self.render_window.GetSize()
+        if window_height <= 0:
+            return
+
+        aspect_ratio = window_width / window_height
+        board_half_size = 1.0
+        margin = 1.05
+
+        if aspect_ratio >= 1.0:
+            parallel_scale = board_half_size * margin
+        else:
+            parallel_scale = (board_half_size / aspect_ratio) * margin
+
+        camera = self.renderer.GetActiveCamera()
+        camera.SetParallelScale(parallel_scale)
+
     def setup_interactor(self) -> None:
         """Set up the interactor with the custom keyboard handler."""
         self.interactor.SetRenderWindow(self.render_window)
@@ -128,6 +156,7 @@ class Game:
                 # Only update if window size actually changed
                 if current_size != self._last_window_size:
                     self._last_window_size = current_size
+                    self.update_camera_scale()
                     self.style.update_label_positions()
 
         self.render_window.AddObserver("ModifiedEvent", on_window_modified)
