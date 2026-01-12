@@ -21,17 +21,17 @@ def create_text_actor(position: Tuple[int, int], player: int = 1) -> vtk.vtkText
     text_property = text_actor.GetTextProperty()
     text_property.SetFontSize(48)  # Larger, more prominent
     text_property.BoldOn()
-    
+
     # Neon color based on player
     if player == 1:
         text_property.SetColor(0.0, 1.0, 1.0)  # Neon cyan for player 1
     else:
         text_property.SetColor(0.0, 1.0, 0.4)  # Neon green for player 2
-    
+
     # Add glow effect via shadow
     text_property.SetShadow(1)
     text_property.SetShadowOffset(2, -2)
-    
+
     text_actor.SetInput("0")
 
     return text_actor

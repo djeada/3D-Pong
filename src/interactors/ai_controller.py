@@ -109,7 +109,11 @@ class AIController:
         """Calculate target Y position with prediction error."""
         # Predict ball Y when it reaches paddle X
         paddle_x = self.paddle.GetPosition()[0]
-        time_to_reach = (paddle_x - ball_pos[0]) / ball_direction[0] if ball_direction[0] != 0 else 0
+        time_to_reach = (
+            (paddle_x - ball_pos[0]) / ball_direction[0]
+            if ball_direction[0] != 0
+            else 0
+        )
 
         predicted_y = ball_pos[1] + ball_direction[1] * time_to_reach
 
@@ -121,7 +125,9 @@ class AIController:
                 predicted_y = 2.0 - predicted_y
 
         # Add prediction error
-        self.prediction_offset = (random.random() - 0.5) * 2 * self.settings["prediction_error"]
+        self.prediction_offset = (
+            (random.random() - 0.5) * 2 * self.settings["prediction_error"]
+        )
         self.target_y = predicted_y + self.prediction_offset
 
     def _move_toward_target(self, paddle_pos: list) -> None:

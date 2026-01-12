@@ -33,7 +33,7 @@ def create_border(
 
     line_actor = vtk.vtkActor()
     line_actor.SetMapper(line_mapper)
-    
+
     # Neon purple color with glow effect
     prop = line_actor.GetProperty()
     prop.SetColor(0.6, 0.0, 1.0)  # Neon purple

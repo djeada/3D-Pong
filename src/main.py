@@ -7,8 +7,7 @@ from src.models.game import Game
 
 # Configure logging at application level
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
 
@@ -18,7 +17,7 @@ def main() -> None:
     # This works both when running from the project root and from src directory
     script_dir = os.path.dirname(os.path.abspath(__file__))
     config_path = os.path.join(script_dir, "config", "config.yaml")
-    
+
     game = Game(config_path)
     game.initialize()
     game.start()

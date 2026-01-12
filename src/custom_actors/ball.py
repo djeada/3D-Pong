@@ -23,11 +23,11 @@ def create_ball(config: Dict[str, Any]) -> vtk.vtkActor:
     """
     # Slightly larger ball for better visibility
     radius = config.get("radius", 0.02) * BALL_SIZE_MULTIPLIER
-    
+
     # Smoother ball with capped resolution for performance
     phi_res = min(config.get("phi_resolution", MIN_RESOLUTION) + 10, MAX_RESOLUTION)
     theta_res = min(config.get("theta_resolution", MIN_RESOLUTION) + 10, MAX_RESOLUTION)
-    
+
     ball_source = vtk.vtkSphereSource()
     ball_source.SetRadius(radius)
     ball_source.SetPhiResolution(phi_res)
@@ -38,7 +38,7 @@ def create_ball(config: Dict[str, Any]) -> vtk.vtkActor:
 
     ball_actor = vtk.vtkActor()
     ball_actor.SetMapper(ball_mapper)
-    
+
     # Neon glow material properties
     prop = ball_actor.GetProperty()
     prop.SetColor(1.0, 1.0, 1.0)  # Start white, will be colored by effects

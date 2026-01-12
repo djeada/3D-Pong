@@ -95,12 +95,12 @@ class Game:
     def setup_interactor(self) -> None:
         """Set up the interactor with the custom keyboard handler."""
         self.interactor.SetRenderWindow(self.render_window)
-        
+
         # Update config with actual window size for responsive positioning
         window_size = self.render_window.GetSize()
         self.config["window"]["width"] = window_size[0]
         self.config["window"]["height"] = window_size[1]
-        
+
         self.style = KeyPressInteractorStyle(
             self.ball_actor,
             self.renderer,
@@ -120,7 +120,7 @@ class Game:
         """Set up callback to handle window resize events."""
         # Store last known size to detect actual resize events
         self._last_window_size = self.render_window.GetSize()
-        
+
         def on_window_modified(obj: vtk.vtkObject, event: str) -> None:
             """Handle window resize event to update label positions."""
             if self.style:
@@ -129,7 +129,7 @@ class Game:
                 if current_size != self._last_window_size:
                     self._last_window_size = current_size
                     self.style.update_label_positions()
-        
+
         self.render_window.AddObserver("ModifiedEvent", on_window_modified)
 
     @staticmethod

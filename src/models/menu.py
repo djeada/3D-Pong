@@ -64,7 +64,7 @@ class MainMenu:
             prop.SetShadowOffset(2, -2)
             self.option_actors.append(actor)
             self.renderer.AddActor(actor)
-        
+
         self._position_options()
 
         # Instructions
@@ -114,13 +114,13 @@ class MainMenu:
         """
         self.window_width = window_width
         self.window_height = window_height
-        
+
         if self.title_actor:
             self._position_title()
-        
+
         if self.option_actors:
             self._position_options()
-        
+
         if self.instruction_actor:
             self._position_instructions()
 

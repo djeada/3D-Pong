@@ -36,7 +36,7 @@ def create_paddle(config: Dict[str, Any]) -> vtk.vtkActor:
 
     paddle_actor = vtk.vtkActor()
     paddle_actor.SetMapper(paddle_mapper)
-    
+
     # Neon glow material properties
     prop = paddle_actor.GetProperty()
     prop.SetAmbient(0.4)  # Higher ambient for glow effect

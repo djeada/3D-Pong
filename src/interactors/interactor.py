@@ -164,23 +164,25 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         mode = "AI" if self.ai_enabled else "2P"
         difficulty = self.current_difficulty.upper() if self.ai_enabled else ""
         status = f"◆ MODE: {mode} {difficulty} | [A]I [D]ifficulty [R]eset [SPACE]Pause [T]rail ◆"
-        if hasattr(self, 'status_actor'):
+        if hasattr(self, "status_actor"):
             self.status_actor.SetInput(status)
 
     def update_label_positions(self) -> None:
         """Update all label positions based on current window size."""
         window_width, window_height = self._get_window_size()
-        
+
         # Update score positions
         score1_x = int(window_width * 0.25)
         score2_x = int(window_width * 0.75)
         score_y = int(window_height * 0.9)
         self.score_manager.score1.SetPosition(score1_x, score_y)
         self.score_manager.score2.SetPosition(score2_x, score_y)
-        
+
         # Update game over actor position (centered)
-        self.game_over_actor.SetPosition(int(window_width * 0.5), int(window_height * 0.5))
-        
+        self.game_over_actor.SetPosition(
+            int(window_width * 0.5), int(window_height * 0.5)
+        )
+
         # Update menu positions
         self.main_menu.update_positions(window_width, window_height)
 
@@ -198,7 +200,9 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
     def _on_game_over(self, winner: int) -> None:
         """Callback when game ends."""
         self.paused = True
-        player_name = "Player 1" if winner == 1 else ("AI" if self.ai_enabled else "Player 2")
+        player_name = (
+            "Player 1" if winner == 1 else ("AI" if self.ai_enabled else "Player 2")
+        )
         self.game_over_actor.SetInput(f"{player_name} WINS!\nPress R to restart")
         self.game_over_actor.SetVisibility(True)
         logger.info(f"Game over! {player_name} wins!")
@@ -211,7 +215,7 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
         else:
             self.ai_enabled = False
             logger.info("Two player mode selected")
-        
+
         self._show_game_elements()
         self._update_status_text()
         self.paused = False
@@ -281,11 +285,11 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             event: The event type string.
         """
         key = self.GetInteractor().GetKeySym()
-        
+
         # Guard against None or empty key values
         if not key:
             return
-        
+
         logger.debug(f"Key pressed: {key}")
 
         # Handle menu input first if menu is visible
@@ -324,12 +328,12 @@ class KeyPressInteractorStyle(vtk.vtkInteractorStyleTrackballCamera):
             # Update trail effect
             if self.visual_effects.trail_enabled:
                 self.visual_effects.update_ball_trail(self.ball_actor)
-            
+
             # Update pulsing glow effects
             self.visual_effects.update_pulsing_effects(
                 self.ball_actor,
                 self.paddle_controller.paddle1,
-                self.paddle_controller.paddle2
+                self.paddle_controller.paddle2,
             )
 
         # Update visual effects (particles, flash, background animation)
