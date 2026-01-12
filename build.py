@@ -76,7 +76,7 @@ def build():
         sys.executable, "-m", "nuitka",
         "--standalone",
         "--onefile",
-        "--plugin-enable=numpy",
+        "--assume-yes-for-downloads",
         "--include-package=vtkmodules",
         "--include-module=vtk",
         "--include-module=vtkmodules.all",
