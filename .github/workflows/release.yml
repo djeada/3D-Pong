@@ -52,7 +52,7 @@ jobs:
 
       - name: Build executable with Nuitka
         run: |
-          python -m nuitka --standalone --onefile --plugin-enable=numpy --include-package=vtkmodules --include-module=vtk --include-module=vtkmodules.all --follow-imports --output-filename=${{ matrix.executable }} src/main.py
+          python -m nuitka --standalone --onefile --assume-yes-for-downloads --include-package=vtkmodules --include-module=vtk --include-module=vtkmodules.all --follow-imports --output-filename=${{ matrix.executable }} src/main.py
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
