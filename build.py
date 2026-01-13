@@ -80,7 +80,7 @@ def build():
         "--include-package=vtkmodules",
         "--include-module=vtk",
         "--include-module=vtkmodules.all",
-        "--follow-imports",
+        "--nofollow-import-to=vtkmodules.test",
         f"--output-filename={output_filename}",
         f"--jobs={num_cores}",
         "src/main.py"
