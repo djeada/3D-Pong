@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def run_command(command, timeout=1800, check=False):
+def run_command(command, timeout=3600, check=False):
     """Run a system command with a timeout and log the output."""
     logging.info(f"Running command: {' '.join(command)}")
     try:
@@ -87,7 +87,7 @@ def build():
     ]
 
     logging.info(f"Running Nuitka compilation: {' '.join(nuitka_command)}")
-    return_code = run_command(nuitka_command, timeout=1800, check=True)
+    return_code = run_command(nuitka_command, timeout=3600, check=True)
 
     if return_code == 0:
         logging.info(f"Build completed successfully! Executable: {output_filename}")
