@@ -71,6 +71,16 @@ def build():
     logging.info(f"Building for platform: {platform.system()}")
     logging.info(f"Output filename: {output_filename}")
 
+    # Platform-specific timeout values (in seconds)
+    # macOS builds with VTK and --onefile are significantly slower
+    system = platform.system().lower()
+    if system == 'darwin':
+        timeout = 7200  # 2 hours for macOS
+    else:
+        timeout = 3600  # 1 hour for Linux and Windows
+
+    logging.info(f"Build timeout set to {timeout} seconds ({timeout/60:.0f} minutes)")
+
     # Nuitka compilation command
     nuitka_command = [
         sys.executable, "-m", "nuitka",
@@ -87,7 +97,7 @@ def build():
     ]
 
     logging.info(f"Running Nuitka compilation: {' '.join(nuitka_command)}")
-    return_code = run_command(nuitka_command, timeout=3600, check=True)
+    return_code = run_command(nuitka_command, timeout=timeout, check=True)
 
     if return_code == 0:
         logging.info(f"Build completed successfully! Executable: {output_filename}")
