@@ -73,6 +73,12 @@ jobs:
         with:
           path: artifacts
 
+      - name: Prepare release assets
+        run: |
+          cp artifacts/3D-Pong-linux/3D-Pong artifacts/3D-Pong-linux/3D-Pong-linux
+          cp artifacts/3D-Pong-windows.exe/3D-Pong.exe artifacts/3D-Pong-windows.exe/3D-Pong-windows.exe
+          cp artifacts/3D-Pong-macos/3D-Pong artifacts/3D-Pong-macos/3D-Pong-macos
+
       - name: Generate release tag
         id: tag
         run: |
@@ -102,9 +108,9 @@ jobs:
             ./3D-Pong-linux
             ```
           files: |
-            artifacts/3D-Pong-linux/3D-Pong
-            artifacts/3D-Pong-windows.exe/3D-Pong.exe
-            artifacts/3D-Pong-macos/3D-Pong
+            artifacts/3D-Pong-linux/3D-Pong-linux
+            artifacts/3D-Pong-windows.exe/3D-Pong-windows.exe
+            artifacts/3D-Pong-macos/3D-Pong-macos
           draft: false
           prerelease: false
         env:
